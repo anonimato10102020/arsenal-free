@@ -1,0 +1,574 @@
+-- Programa: LKZ HUB - FREE
+-- Cor: Vermelho / Efeito: Neon
+-- made by KIEFER & LIPZ
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+
+-- GUI raiz
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "LKZ HUB - FREE_GUI"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Frame principal
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 620, 0, 360)
+mainFrame.Position = UDim2.new(0.5, -310, 0.5, -180)
+mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.ClipsDescendants = true
+mainFrame.Parent = screenGui
+
+local corPrincipal = Color3.fromRGB(200, 60, 60)
+
+-- Top bar
+local topBar = Instance.new("Frame")
+topBar.Size = UDim2.new(1, 0, 0, 60)
+topBar.Position = UDim2.new(0, 0, 0, 0)
+topBar.BackgroundColor3 = corPrincipal
+topBar.BorderSizePixel = 0
+topBar.Parent = mainFrame
+
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, corPrincipal),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(80, 80, 130))
+})
+gradient.Rotation = 45
+gradient.Parent = topBar
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 12)
+mainCorner.Parent = mainFrame
+
+local topCorner = Instance.new("UICorner")
+topCorner.CornerRadius = UDim.new(0, 12)
+topCorner.Parent = topBar
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -20, 0, 28)
+title.Position = UDim2.new(0, 10, 0, 6)
+title.BackgroundTransparency = 1
+title.Text = "LKZ HUB - FREE"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = topBar
+
+local madeBy = Instance.new("TextLabel")
+madeBy.Size = UDim2.new(1, -20, 0, 20)
+madeBy.Position = UDim2.new(0, 10, 0, 32)
+madeBy.BackgroundTransparency = 1
+madeBy.Text = "made by KIEFER & LIPZ"
+madeBy.Font = Enum.Font.Gotham
+madeBy.TextSize = 14
+madeBy.TextColor3 = Color3.fromRGB(220, 220, 220)
+madeBy.TextXAlignment = Enum.TextXAlignment.Left
+madeBy.Parent = topBar
+
+-- Botão MINIMIZAR (top bar)
+local minimizeBtn = Instance.new("TextButton")
+minimizeBtn.Size = UDim2.new(0, 28, 0, 28)
+minimizeBtn.Position = UDim2.new(1, -40, 0, 6)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+minimizeBtn.Text = "_"
+minimizeBtn.Font = Enum.Font.GothamBold
+minimizeBtn.TextSize = 20
+minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+minimizeBtn.AutoButtonColor = false
+minimizeBtn.Parent = topBar
+
+local minimizeCorner = Instance.new("UICorner")
+minimizeCorner.CornerRadius = UDim.new(0, 6)
+minimizeCorner.Parent = minimizeBtn
+
+local minimized = false
+
+-- Neon borda
+local neon = Instance.new("UIStroke")
+neon.Color = corPrincipal
+neon.Thickness = 3
+neon.Transparency = 0.1
+neon.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+neon.Parent = mainFrame
+
+---------------------------------------------------------------------
+-- LAYOUT: ESQUERDA (FREE) / DIREITA (PREMIUM)
+---------------------------------------------------------------------
+
+local contentHeightOffset = 60
+
+local leftFrame = Instance.new("Frame")
+leftFrame.Size = UDim2.new(0.55, 0, 1, -contentHeightOffset)
+leftFrame.Position = UDim2.new(0, 0, 0, contentHeightOffset)
+leftFrame.BackgroundTransparency = 1
+leftFrame.Parent = mainFrame
+
+local rightFrame = Instance.new("Frame")
+rightFrame.Size = UDim2.new(0.45, -10, 1, -contentHeightOffset)
+rightFrame.Position = UDim2.new(0.55, 10, 0, contentHeightOffset)
+rightFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+rightFrame.BorderSizePixel = 0
+rightFrame.Parent = mainFrame
+
+local rightCorner = Instance.new("UICorner")
+rightCorner.CornerRadius = UDim.new(0, 10)
+rightCorner.Parent = rightFrame
+
+local rightStroke = Instance.new("UIStroke")
+rightStroke.Color = corPrincipal
+rightStroke.Thickness = 1.6
+rightStroke.Transparency = 0.4
+rightStroke.Parent = rightFrame
+
+-- Lógica do botão de minimizar (usa leftFrame/rightFrame)
+minimizeBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    if minimized then
+        leftFrame.Visible = false
+        rightFrame.Visible = false
+        mainFrame.Size = UDim2.new(0, 620, 0, 60)
+    else
+        leftFrame.Visible = true
+        rightFrame.Visible = true
+        mainFrame.Size = UDim2.new(0, 620, 0, 360)
+    end
+end)
+
+---------------------------------------------------------------------
+-- SCROLL / BOTÕES (LADO ESQUERDO)
+---------------------------------------------------------------------
+
+local scrollFrame = Instance.new("ScrollingFrame")
+scrollFrame.Size = UDim2.new(1, -20, 1, -10)
+scrollFrame.Position = UDim2.new(0, 10, 0, 5)
+scrollFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+scrollFrame.BackgroundTransparency = 0.3
+scrollFrame.BorderSizePixel = 0
+scrollFrame.ScrollBarThickness = 4
+scrollFrame.ScrollBarImageColor3 = corPrincipal
+scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+scrollFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+scrollFrame.Parent = leftFrame
+
+local scrollCorner = Instance.new("UICorner")
+scrollCorner.CornerRadius = UDim.new(0, 10)
+scrollCorner.Parent = scrollFrame
+
+local uiList = Instance.new("UIListLayout")
+uiList.Padding = UDim.new(0, 8)
+uiList.FillDirection = Enum.FillDirection.Vertical
+uiList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+uiList.SortOrder = Enum.SortOrder.LayoutOrder
+uiList.Parent = scrollFrame
+
+local uiPadding = Instance.new("UIPadding")
+uiPadding.PaddingTop = UDim.new(0, 6)
+uiPadding.PaddingBottom = UDim.new(0, 6)
+uiPadding.Parent = scrollFrame
+
+local function createModernButton(text, order)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0.96, 0, 0, 36)
+    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.GothamSemibold
+    btn.TextSize = 15
+    btn.Text = text
+    btn.LayoutOrder = order or 0
+    btn.AutoButtonColor = false
+    btn.Parent = scrollFrame
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = btn
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = corPrincipal
+    stroke.Thickness = 1.4
+    stroke.Transparency = 0.4
+    stroke.Parent = btn
+
+    local hoverTween = TweenService:Create(btn, TweenInfo.new(0.18, Enum.EasingStyle.Quart), {
+        BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+    })
+
+    local normalTween = TweenService:Create(btn, TweenInfo.new(0.18, Enum.EasingStyle.Quart), {
+        BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+    })
+
+    btn.MouseEnter:Connect(function()
+        hoverTween:Play()
+    end)
+
+    btn.MouseLeave:Connect(function()
+        normalTween:Play()
+    end)
+
+    return btn
+end
+
+---------------------------------------------------------------------
+-- LÓGICA DAS FUNÇÕES
+---------------------------------------------------------------------
+
+local AimbotEnabled = false
+local AimbotSmooth = 0.12
+local aimbotMode = "legit"
+local AimAssistEnabled = false
+local AimAssistStrength = 0.04
+local ESPEnabled = false
+local espBoxes = {}
+local SpeedEnabled = false
+local defaultWalk = 16
+
+local function getClosestPlayer()
+    local closestDist = math.huge
+    local target = nil
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            local pos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
+            if onScreen then
+                local dist = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(pos.X, pos.Y)).Magnitude
+                if dist < closestDist then
+                    closestDist = dist
+                    target = plr
+                end
+            end
+        end
+    end
+    return target
+end
+
+---------------------------------------------------------------------
+-- BOTÃO DISCORD (PRIMEIRO E COM DESTAQUE)
+---------------------------------------------------------------------
+
+local discordBtn = createModernButton("🔗 COPIAR DISCORD", 1)
+discordBtn.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
+
+local discordCorner = discordBtn:FindFirstChildOfClass("UICorner") or Instance.new("UICorner")
+discordCorner.CornerRadius = UDim.new(0, 15)
+discordCorner.Parent = discordBtn
+
+local discordStroke = discordBtn:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke")
+discordStroke.Color = Color3.fromRGB(150, 220, 150)
+discordStroke.Thickness = 2.5
+discordStroke.Transparency = 0.4
+discordStroke.Parent = discordBtn
+
+local discordHoverTween = TweenService:Create(discordBtn, TweenInfo.new(0.18, Enum.EasingStyle.Quart), {
+    BackgroundColor3 = Color3.fromRGB(120, 220, 120)
+})
+
+local discordNormalTween = TweenService:Create(discordBtn, TweenInfo.new(0.18, Enum.EasingStyle.Quart), {
+    BackgroundColor3 = Color3.fromRGB(100, 200, 100)
+})
+
+local discordClickDebounce = false
+
+discordBtn.MouseEnter:Connect(function()
+    if not discordClickDebounce then
+        discordHoverTween:Play()
+    end
+end)
+
+discordBtn.MouseLeave:Connect(function()
+    if not discordClickDebounce then
+        discordNormalTween:Play()
+    end
+end)
+
+discordBtn.MouseButton1Click:Connect(function()
+    if discordClickDebounce then return end
+    discordClickDebounce = true
+
+    local discordLink = "https://discord.gg/mBeGpFgXCA"
+    if setclipboard then
+        setclipboard(discordLink)
+    end
+
+    local originalText = discordBtn.Text
+    discordBtn.Text = "✅ COPIADO!"
+    discordBtn.BackgroundColor3 = Color3.fromRGB(130, 230, 130)
+
+    task.wait(2)
+
+    discordBtn.Text = originalText
+    discordBtn.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
+    discordClickDebounce = false
+end)
+
+task.spawn(function()
+    while discordBtn.Parent do
+        TweenService:Create(discordStroke, TweenInfo.new(0.75, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+            Transparency = 0.2
+        }):Play()
+        task.wait(0.75)
+        TweenService:Create(discordStroke, TweenInfo.new(0.75, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {
+            Transparency = 0.8
+        }):Play()
+        task.wait(0.75)
+    end
+end)
+
+---------------------------------------------------------------------
+-- RESTO DOS BOTÕES (NA ORDEM)
+---------------------------------------------------------------------
+
+local aimbotBtn = createModernButton("🎯 AIMBOT [X] - OFF", 2)
+aimbotBtn.MouseButton1Click:Connect(function()
+    AimbotEnabled = not AimbotEnabled
+    aimbotBtn.Text = "🎯 AIMBOT [X] - " .. (AimbotEnabled and "ON" or "OFF")
+end)
+
+UIS.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.X then
+        AimbotEnabled = not AimbotEnabled
+        aimbotBtn.Text = "🎯 AIMBOT [X] - " .. (AimbotEnabled and "ON" or "OFF")
+    end
+end)
+
+local rageBtn = createModernButton("⚡ RAGE MODE", 3)
+local semiRageBtn = createModernButton("🔥 SEMI-RAGE", 4)
+local smoothBtn = createModernButton("✨ SMOOTH MODE", 5)
+local legitBtn = createModernButton("✅ LEGIT MODE", 6)
+
+local function updateModeButtons()
+    local normalColor = Color3.fromRGB(40, 40, 55)
+    local activeColor = Color3.fromRGB(70, 150, 70)
+    rageBtn.BackgroundColor3 = aimbotMode == "rage" and activeColor or normalColor
+    semiRageBtn.BackgroundColor3 = aimbotMode == "semi" and activeColor or normalColor
+    smoothBtn.BackgroundColor3 = aimbotMode == "smooth" and activeColor or normalColor
+    legitBtn.BackgroundColor3 = aimbotMode == "legit" and activeColor or normalColor
+end
+
+aimbotMode = "legit"
+AimbotSmooth = 0.12
+updateModeButtons()
+
+rageBtn.MouseButton1Click:Connect(function()
+    aimbotMode = "rage"
+    AimbotSmooth = 0.95
+    updateModeButtons()
+end)
+
+semiRageBtn.MouseButton1Click:Connect(function()
+    aimbotMode = "semi"
+    AimbotSmooth = 0.5
+    updateModeButtons()
+end)
+
+smoothBtn.MouseButton1Click:Connect(function()
+    aimbotMode = "smooth"
+    AimbotSmooth = 0.2
+    updateModeButtons()
+end)
+
+legitBtn.MouseButton1Click:Connect(function()
+    aimbotMode = "legit"
+    AimbotSmooth = 0.12
+    updateModeButtons()
+end)
+
+RunService.RenderStepped:Connect(function()
+    if AimbotEnabled then
+        local target = getClosestPlayer()
+        if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+            local cam = workspace.CurrentCamera
+            local from = cam.CFrame
+            local to = CFrame.new(cam.CFrame.Position, target.Character.HumanoidRootPart.Position)
+            cam.CFrame = from:Lerp(to, AimbotSmooth)
+        end
+    end
+end)
+
+local aimAssistBtn = createModernButton("🎯 AIM ASSIST [T] - OFF", 7)
+aimAssistBtn.MouseButton1Click:Connect(function()
+    AimAssistEnabled = not AimAssistEnabled
+    aimAssistBtn.Text = "🎯 AIM ASSIST [T] - " .. (AimAssistEnabled and "ON" or "OFF")
+end)
+
+UIS.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.T then
+        AimAssistEnabled = not AimAssistEnabled
+        aimAssistBtn.Text = "🎯 AIM ASSIST [T] - " .. (AimAssistEnabled and "ON" or "OFF")
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if AimAssistEnabled then
+        local target = getClosestPlayer()
+        if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+            local cam = workspace.CurrentCamera
+            local from = cam.CFrame
+            local to = CFrame.new(cam.CFrame.Position, target.Character.HumanoidRootPart.Position)
+            cam.CFrame = from:Lerp(to, AimAssistStrength)
+        end
+    end
+end)
+
+local function clearESP()
+    for _, b in ipairs(espBoxes) do
+        if b and b.Parent then b:Destroy() end
+    end
+    espBoxes = {}
+end
+
+local function createESPForPlayer(plr)
+    if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+        local box = Instance.new("BoxHandleAdornment")
+        box.Size = Vector3.new(4, 6, 2)
+        box.Color3 = Color3.new(1, 0, 0)
+        box.Transparency = 0.5
+        box.ZIndex = 10
+        box.AlwaysOnTop = true
+        box.Adornee = plr.Character.HumanoidRootPart
+        box.Parent = workspace
+        table.insert(espBoxes, box)
+    end
+end
+
+local espBtn = createModernButton("👁️ ESP - OFF", 8)
+espBtn.MouseButton1Click:Connect(function()
+    ESPEnabled = not ESPEnabled
+    espBtn.Text = "👁️ ESP - " .. (ESPEnabled and "ON" or "OFF")
+    clearESP()
+    if ESPEnabled then
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer then
+                createESPForPlayer(plr)
+            end
+        end
+    end
+end)
+
+local speedBtn = createModernButton("⚡ SPEED - OFF", 9)
+speedBtn.MouseButton1Click:Connect(function()
+    SpeedEnabled = not SpeedEnabled
+    speedBtn.Text = "⚡ SPEED - " .. (SpeedEnabled and "ON" or "OFF")
+    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local hum = char:WaitForChild("Humanoid")
+    if SpeedEnabled then
+        defaultWalk = hum.WalkSpeed
+        hum.WalkSpeed = 50
+    else
+        hum.WalkSpeed = defaultWalk
+    end
+end)
+
+---------------------------------------------------------------------
+-- PAINEL PREMIUM (LADO DIREITO) - IMAGEM DO CHEAT PAGO
+---------------------------------------------------------------------
+
+local premiumTitle = Instance.new("TextLabel")
+premiumTitle.Size = UDim2.new(1, -20, 0, 26)
+premiumTitle.Position = UDim2.new(0, 10, 0, 10)
+premiumTitle.BackgroundTransparency = 1
+premiumTitle.Font = Enum.Font.GothamBold
+premiumTitle.TextSize = 18
+premiumTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+premiumTitle.TextXAlignment = Enum.TextXAlignment.Left
+premiumTitle.Text = "LKZ HUB - PREMIUM"
+premiumTitle.Parent = rightFrame
+
+local premiumSub = Instance.new("TextLabel")
+premiumSub.Size = UDim2.new(1, -20, 0, 20)
+premiumSub.Position = UDim2.new(0, 10, 0, 34)
+premiumSub.BackgroundTransparency = 1
+premiumSub.Font = Enum.Font.Gotham
+premiumSub.TextSize = 13
+premiumSub.TextColor3 = Color3.fromRGB(220, 220, 220)
+premiumSub.TextXAlignment = Enum.TextXAlignment.Left
+premiumSub.Text = "Olha o que você tá perdendo..."
+premiumSub.Parent = rightFrame
+
+local premiumImage = Instance.new("ImageLabel")
+premiumImage.Size = UDim2.new(1, -20, 0, 180)
+premiumImage.Position = UDim2.new(0, 10, 0, 64)
+premiumImage.BackgroundTransparency = 1
+premiumImage.ScaleType = Enum.ScaleType.Fit
+premiumImage.Parent = rightFrame
+
+local premiumImageCorner = Instance.new("UICorner")
+premiumImageCorner.CornerRadius = UDim.new(0, 10)
+premiumImageCorner.Parent = premiumImage
+
+-- premiumImage.Image = "rbxassetid://SEU_ID_AQUI"
+
+local premiumStroke = Instance.new("UIStroke")
+premiumStroke.Color = Color3.fromRGB(255, 255, 255)
+premiumStroke.Thickness = 1.4
+premiumStroke.Transparency = 0.4
+premiumStroke.Parent = premiumImage
+
+local premiumBtn = Instance.new("TextButton")
+premiumBtn.Size = UDim2.new(1, -20, 0, 32)
+premiumBtn.Position = UDim2.new(0, 10, 0, 260)
+premiumBtn.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+premiumBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+premiumBtn.Font = Enum.Font.GothamSemibold
+premiumBtn.TextSize = 14
+premiumBtn.Text = "QUERO O PREMIUM (DISCORD)"
+premiumBtn.AutoButtonColor = false
+premiumBtn.Parent = rightFrame
+
+local premiumBtnCorner = Instance.new("UICorner")
+premiumBtnCorner.CornerRadius = UDim.new(0, 8)
+premiumBtnCorner.Parent = premiumBtn
+
+local premiumBtnStroke = Instance.new("UIStroke")
+premiumBtnStroke.Color = Color3.fromRGB(255, 255, 255)
+premiumBtnStroke.Thickness = 1.4
+premiumBtnStroke.Transparency = 0.4
+premiumBtnStroke.Parent = premiumBtn
+
+local premiumHover = TweenService:Create(premiumBtn, TweenInfo.new(0.18, Enum.EasingStyle.Quart), {
+    BackgroundColor3 = Color3.fromRGB(230, 80, 80)
+})
+
+local premiumNormal = TweenService:Create(premiumBtn, TweenInfo.new(0.18, Enum.EasingStyle.Quart), {
+    BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+})
+
+premiumBtn.MouseEnter:Connect(function()
+    premiumHover:Play()
+end)
+
+premiumBtn.MouseLeave:Connect(function()
+    premiumNormal:Play()
+end)
+
+-- PREMIUM: delay extra de 2s + debounce
+local premiumDebounce = false
+
+premiumBtn.MouseButton1Click:Connect(function()
+    if premiumDebounce then return end
+    premiumDebounce = true
+
+    -- delay extra antes de funcionar
+    task.wait(2)
+
+    local discordLink = "https://discord.gg/mBeGpFgXCA"
+    if setclipboard then
+        setclipboard(discordLink)
+    end
+    premiumBtn.Text = "DISCORD COPIADO!"
+    task.wait(2)
+	premiumBtn.Text = "✅ ABRA O NAVEGADOR E COLE O LINK!"
+	task.wait((3))
+    premiumBtn.Text = "QUERO O PREMIUM"
+
+    premiumDebounce = false
+end)
